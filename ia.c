@@ -14,10 +14,10 @@ typedef struct data_v data_v;
 struct data_base {
 	int nbVector;
 	int nbColumn;
-	data_v * vector;
 	int * suffledIndex;
 	char ** dictionnary;
 	int nb_dictionnary;
+	data_v * vector;
 };
 typedef struct data_base data_base;
 
@@ -29,12 +29,11 @@ struct node {
 typedef struct node node;
 
 struct parametre{
-double alpha,alpha_init;
-int it_current,it_total;
 int phase1;
 float phase2;
-int rayon_voisinage;
-int rayon_voisinage_init;
+double alpha,alpha_init;
+int it_current,it_total;
+int rayon_voisinage,rayon_voisinage_init;
 };
 typedef struct parametre parametre;
 
@@ -180,7 +179,7 @@ double randomNumber(double borneInf,double borneSup){
 void genWeight(double * intv,int nbl,double * w){
 	int i;
 	for(i=0;i<nbl;i++)
-		w[i]=(double)randomNumber(intv[i]+intv[i]/2,intv[i]-intv[i]/2);
+		w[i]=(double)randomNumber(intv[i]-intv[i]/2,intv[i]+intv[i]/2);
 }
 
 double * averageVector(data_v * data, int nbLigne, int nbColumn) {
