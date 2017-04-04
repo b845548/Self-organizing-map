@@ -1,72 +1,4 @@
-#include<stdio.h>
-#include<string.h>
-#include<stdlib.h>
-#include<math.h>
-#include<time.h>
-
-struct data_v{
-  double * v;
-  int id;
-  double norm;
-};
-typedef struct data_v data_v;
-
-struct data_base {
-	int nbVector;
-	int nbColumn;
-	int * suffledIndex;
-	char ** dictionnary;
-	int nb_dictionnary;
-	data_v * vector;
-};
-typedef struct data_base data_base;
-
-struct node {
-	double * w; // 4;
-	double act; // distance uclidien
-	int etiq;
-};
-typedef struct node node;
-
-struct parametre{
-int phase1;
-float phase2;
-double alpha,alpha_init;
-int it_current,it_total;
-int rayon_voisinage,rayon_voisinage_init;
-};
-typedef struct parametre parametre;
-
-struct network {
-	int width;
-	int height;
-	int nb_nodes;
-	node * nodes;// node ** 50% DE
-	parametre param;
-};
-typedef struct network network;
-
-struct  best_matching_unit {
-	int minX;
-	int minY;
-	struct best_matching_unit * next;
-};
-typedef struct best_matching_unit best_matching_unit;
-
-
-struct best_matching_unit_Header{
-	int nbl;
-	struct best_matching_unit * begin;
-	struct best_matching_unit * end;
-};
-typedef struct best_matching_unit_Header best_matching_unit_Header;
-
-
-
-
-
-
-
+#include"som.h"
 
 double normalisation(double * vec,int nbl){
 	int i;
@@ -97,11 +29,11 @@ int * genSuffledVector(int nbl){ // generer un vecteur avec des valeur de 0 à n
 
 }
 int findDictionnary(char * mot,char ** dictionnary,int nb){
-int index=0;
 int i;
-for(i=0;i<nb;i++)
+for(i=0;i<nb;i++){
 	if(strcmp(mot,dictionnary[i])==0)
 		return i;
+}
 	return -1;
 
 }
@@ -199,7 +131,7 @@ double * averageVector(data_v * data, int nbLigne, int nbColumn) {
 
 
 double distanceEuclid(double * p, double * q,int nbl){
-	double result=0.0,tmp;
+	double result=0.0;
 	int i;
 		for(i=0;i<nbl;i++)
 			result+=(p[i] - q[i])*(p[i] - q[i]);
@@ -211,8 +143,6 @@ double distanceEuclid(double * p, double * q,int nbl){
 
 
 int tailleCarre(int nb){
-	int i;
-	int number;
 	int nonSqrt;
 	double num;
 	while(1){
@@ -228,10 +158,13 @@ int tailleCarre(int nb){
 
 void initNetwork(data_base * db,network * net){
 	
-	int i,rv,total,j;	
+	int i,rv,total;	
 	double * average;
-	net->height=tailleCarre((int)sqrt(db->nbVector)*5);
-	net->width=net->height;
+//	net->height=tailleCarre((int)sqrt(db->nbVector)*5);
+//	net->width=net->height;
+	
+	net->height=6;
+	net->width=10;	
 	net->nb_nodes=net->width*net->height;
 	net->nodes=(node *)malloc(sizeof(node)*net->nb_nodes);
 	for(rv=1,total=0;total<net->nb_nodes/2;total+=rv*8,rv++);// 50% de node
@@ -347,9 +280,9 @@ void apprentisage(data_base * db,network * net){
 
 
 void initEtiq(data_base * db,network * net){
-	int i,j,k;
-	int max,min;
-	float act,save;
+	int i,j;
+	int min;
+	double act,save;
 	for(i=0;i<net->nb_nodes;i++){
 		for(j=0,min=0,save=1000;j<db->nbVector;j++){
 			act=distanceEuclid(db->vector[j].v, net->nodes[i].w, db->nbColumn);
@@ -364,8 +297,9 @@ void initEtiq(data_base * db,network * net){
 		net->nodes[i].etiq=db->vector[min].id;
 	}
 }
-void printCarte(network * net){
+void printCarteName(network * net){
 int i,j;
+printf("Etiquete de memoire neuron\n");
 	for(j=0;j<net->height;j++){
 		for(i=0;i<net->width;i++)
 		if(net->nodes[i+j*net->width].etiq==-1)
@@ -375,6 +309,40 @@ int i,j;
 			printf("\n");
 	}
 }
+
+
+double magnitude(double * vec,int nb){
+int i;
+double res;
+for(i=0,res=0.;i<nb;i++){
+res=vec[i]*vec[i];
+}
+return sqrt(res);
+}
+void printCarteVal(network * net){
+int i,j;
+printf("Magnitude de memoire neuron\n");
+	for(j=0;j<net->height;j++){
+		for(i=0;i<net->width;i++)
+		if(net->nodes[i+j*net->width].etiq==-1)
+		printf(" ");
+		else		
+		printf("%3.3f ",magnitude(net->nodes[i+j*net->width].w,4));
+			printf("\n");
+	}
+}
+void init_neuron(){
+	data_base db;
+	network net;
+	srand(time(NULL));
+	initData(&db,"iris.data");
+	initNetwork(&db,&net);
+	apprentisage(&db,&net);
+	initEtiq(&db,&net);
+	printCarteName(&net);
+	printCarteVal(&net);
+}
+/*
 int main(int args,char ** argv){
 	data_base db;
 	network net;
@@ -383,10 +351,11 @@ int main(int args,char ** argv){
 	initNetwork(&db,&net);
 	apprentisage(&db,&net);
 	initEtiq(&db,&net);
-	printCarte(&net);
+	printCarteName(&net);
+	printCarteVal(&net);
 	return 0;	
 }
-
+*/
 /*
 nb_node=5*sqrt(nb_vec);
 for(RV=0,i=0;i<nb_node;i+=8,RV++);//RV=(nb_node/2)8;
