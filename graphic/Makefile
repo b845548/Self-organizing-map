@@ -13,9 +13,9 @@ MKDIR = mkdir
 CHMOD = chmod
 CP = rsync -R
 # déclaration des options du compilateur
-CFLAGS = -Wall -O3
+CFLAGS = -Wall -O3  -I./include
 CPPFLAGS = -I.
-LDFLAGS = -lm
+LDFLAGS = -lm -L./lib
 
 # définition des fichiers et dossiers
 PROGNAME = som

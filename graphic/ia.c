@@ -29,21 +29,21 @@ int * genSuffledVector(int nbl){ // generer un vecteur avec des valeur de 0 à n
 
 }
 int findDictionnary(char * mot,char ** dictionnary,int nb){
-int i;
-for(i=0;i<nb;i++){
-	if(strcmp(mot,dictionnary[i])==0)
-		return i;
-}
+    int i;
+    for(i=0;i<nb;i++){
+	    if(strcmp(mot,dictionnary[i])==0)
+		    return i;
+    }
 	return -1;
 
 }
 int isDouble(char * str){
-int i,len=strlen(str);
-for(i=0;i<len;i++)
-	if(strchr(".1234567890",str[i])==NULL)
-		return 0;
+    int i,len=strlen(str);
+    for(i=0;i<len;i++)
+	    if(strchr(".1234567890",str[i])==NULL)
+		    return 0;
 
-return 1;
+    return 1;
 }
 
 void initData(data_base * db,char * fileName){
@@ -65,11 +65,14 @@ void initData(data_base * db,char * fileName){
 	}
 	fseek(f,0,SEEK_SET);
 	data=(data_v *)malloc(sizeof(data_v)*(nb_line-1));
+    assert(data);
 	db->dictionnary=(char **)malloc(sizeof(char*)*(100));
+    assert(db->dictionnary);
 	db->nb_dictionnary=0;
 
 	for(j=0;NULL!=fgets(buf,255,f);j++){
 		data[j].v=(double *)malloc(sizeof(double)*db->nbColumn);
+	    assert(data[j].v);
 		ptr=strtok(buf,",");
 		for(i=0;ptr!=NULL;i++){
 			if(i<db->nbColumn){
@@ -111,13 +114,14 @@ double randomNumber(double borneInf,double borneSup){
 void genWeight(double * intv,int nbl,double * w){
 	int i;
 	for(i=0;i<nbl;i++)
-		w[i]=(double)randomNumber(intv[i]-intv[i]/2,intv[i]+intv[i]/2);
+		w[i]=(double)randomNumber(intv[i]-0.3,intv[i]+0.3);
 }
 
 double * averageVector(data_v * data, int nbLigne, int nbColumn) {
    	int i,j;
 	double * avtb;
 	avtb=(double *)malloc(sizeof(double)*nbColumn);
+    assert(avtb);
 	memset(avtb,0,sizeof(double)*nbColumn);
 	for(j=0;j<nbLigne;j++)
 		for(i=0;i<nbColumn;i++)
@@ -140,7 +144,7 @@ double distanceEuclid(double * p, double * q,int nbl){
 
 }
 
-
+/*
 
 int tailleCarre(int nb){
 	int nonSqrt;
@@ -154,7 +158,7 @@ int tailleCarre(int nb){
 	return nonSqrt;
 }
 
-
+*/
 
 void initNetwork(data_base * db,network * net){
 	
@@ -167,6 +171,7 @@ void initNetwork(data_base * db,network * net){
 	net->width=10;	
 	net->nb_nodes=net->width*net->height;
 	net->nodes=(node *)malloc(sizeof(node)*net->nb_nodes);
+    assert(net->nodes);
 	for(rv=1,total=0;total<net->nb_nodes/2;total+=rv*8,rv++);// 50% de node
 	net->param.rayon_voisinage=rv; 
 	net->param.rayon_voisinage_init=rv;
@@ -179,6 +184,7 @@ void initNetwork(data_base * db,network * net){
 	average=averageVector(db->vector,db->nbVector, db->nbColumn);
 	for (i = 0; i < net->nb_nodes; i++){
 		net->nodes[i].w=(double *)malloc(sizeof(double)*db->nbColumn);
+        assert(net->nodes[i].w);
 		genWeight(average,db->nbColumn,net->nodes[i].w);
 		net->nodes[i].act=distanceEuclid(net->nodes[i].w,db->vector[db->suffledIndex[i]].v, db->nbColumn);
 		net->nodes[i].etiq = -1;
@@ -204,6 +210,7 @@ void initBMU(network * net, best_matching_unit_Header *bmu){
 	for(i=0;i<net->nb_nodes;i++){
 		if(net->nodes[mini].act==net->nodes[i].act){
 			nouveau=(best_matching_unit *)malloc(sizeof(best_matching_unit));
+            assert(nouveau);
 			nouveau->minX=i%net->width;
 			nouveau->minY=i/net->width;
 			nouveau->next=bmu->begin;
@@ -298,8 +305,8 @@ void initEtiq(data_base * db,network * net){
 	}
 }
 void printCarteName(network * net){
-int i,j;
-printf("Etiquete de memoire neuron\n");
+    int i,j;
+    printf("Etiquete de memoire neuron\n");
 	for(j=0;j<net->height;j++){
 		for(i=0;i<net->width;i++)
 		if(net->nodes[i+j*net->width].etiq==-1)
@@ -312,16 +319,16 @@ printf("Etiquete de memoire neuron\n");
 
 
 double magnitude(double * vec,int nb){
-int i;
-double res;
-for(i=0,res=0.;i<nb;i++){
-res=vec[i]*vec[i];
-}
-return sqrt(res);
+    int i;
+    double res;
+    for(i=0,res=0.;i<nb;i++){
+        res=vec[i]*vec[i];
+    }
+    return sqrt(res);
 }
 void printCarteVal(network * net){
-int i,j;
-printf("Magnitude de memoire neuron\n");
+    int i,j;
+    printf("Magnitude de memoire neuron\n");
 	for(j=0;j<net->height;j++){
 		for(i=0;i<net->width;i++)
 		if(net->nodes[i+j*net->width].etiq==-1)
@@ -342,6 +349,8 @@ void init_neuron(){
 	printCarteName(&net);
 	printCarteVal(&net);
 }
+
+
 /*
 int main(int args,char ** argv){
 	data_base db;

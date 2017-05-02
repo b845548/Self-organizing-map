@@ -3,6 +3,7 @@
 #include<stdlib.h>
 #include<math.h>
 #include<time.h>
+#include<assert.h>
 
 struct data_v{
   double * v;

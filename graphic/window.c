@@ -37,7 +37,7 @@ static float _G[] = {0, -980};
 void mobileInit(int n) {
 int i,j;
 double mag;
-GLuint color;
+//GLuint color;
 	srand(time(NULL));
 	initData(&db,"iris.data");
 	initNetwork(&db,&net);
@@ -60,7 +60,7 @@ GLuint color;
     _mobiles[i+j*net.width].ax = _G[0];
     _mobiles[i+j*net.width].ay = _G[1];
     mag=magnitude(net.nodes[i+j*net.width].w,db.nbColumn);
-    color=(GLuint)120*(net.nodes[i+j*net.width].etiq);
+ //  color=(GLuint)120*(net.nodes[i+j*net.width].etiq);
 	_mobiles[i+j*net.width].color = (255<<24)+((int)(mag*40)<<16)+(50<<8)+((int)(mag*40));
 	}
 }
@@ -153,7 +153,7 @@ static void quit(void) {
  * appelle la boucle principale.*/
 int main(int argc, char ** argv) {
   /* fenêtre positionnée en (10, 10), ayant une dimension de (512, 512) et un titre "GL4D-Primitives" */
-  if(!gl4duwCreateWindow(argc, argv, "GL4D-BaBalle", 10, 10, 800,400, SDL_WINDOW_SHOWN))
+  if(!gl4duwCreateWindow(argc, argv, "SOM IRIS", 10, 10, 800,200, SDL_WINDOW_SHOWN))
     return 1;
   gl4dpInitScreen();
   mobileInit(100);
